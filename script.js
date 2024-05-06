@@ -17,6 +17,7 @@ let cards = [
     "card-7.jpg?v=1710350281339",
     "card-8.jpg?v=1710350281777"
 ];
+let clickedIds = [];
 
 // Button to Show Deck
 buttonShow.onclick = function() {
@@ -35,24 +36,71 @@ buttonShow.onclick = function() {
 buttonDouble.onclick = function() {
     console.log("Deck has" + cards.length + "cards.");
     for (let card of cards) {
-        cards.push(card);
-        game.insertAdjacentHTML("beforeend",
-            "<div style='background-image:url(" +
-            url + card + ")' class='card'>"
-        );
+        if (cards.length !== 16) {
+            cards.push(card);
+            game.insertAdjacentHTML("beforeend",
+                "<div style='background-image:url(" +
+                url + card + ")' class='card'>"
+            );
+        }
     }
+    buttonDouble.style.color = "silver";
+
 };
 console.log("Now the deck has " + cards.length + "cards.");
-buttonDouble.style.color = "siilver";
 
 
 
 // Button to Shuffle Cards
+buttonShuffle.onclick = function() {
+    shuffle(cards);
+    game.innerHTML = "";
+    console.log("I'm shuffleing the cards!");
+let i = 0;
+    for (let card of cards) {
+        game.insertAdjacentHTML("beforeend",
+            "<div style='background-image:url(" +
+            url + card + ")' class='card' id='"+i+"'>");
+        i = i+ 1;
+    }
+
+
+
+
+};
+
+/* ---------------------------------------------------
+DON'T CHANGE THE Fisher-Yates SHUFFLE FUNCTION BELOW!
+--------------------------------------------------- */
+function shuffle(array) {
+    let currentIndex = array.length,
+        randomIndex;
+    // While there are elements to shuffle...
+    while (currentIndex > 0) {
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex = currentIndex - 1;
+        // Swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]
+        ];
+    }
+    return array;
+}
 
 
 // Button to Flip All Cards
-
-
+buttonFlip.onclick = function() {
+    shuffle(cards);
+    // game.innerHTML = "";
+    let i = 0;
+    for (let card of cards) {
+        document.getElementById(i).style.backgroundImage="";
+        i=i+1;
+    }
+    console.log("shuffle the deck.");
+    buttonShuffle.style.color = "Silver";
+};
 
 
 // Here we need a function for clicking on individual cards.
@@ -60,4 +108,36 @@ buttonDouble.style.color = "siilver";
 $(document).click(function(event) {
     // Get the id property of the clicked thing.
     let clickedId = event.target.id;
+});
+
+
+//logic
+
+$(document).click(function(event) {
+    let clickedId = event.target.id;
+    console.log(clickedId);
+    if (clickedId !== "") {
+        document.getElementById(clickedId).style.backgroundImage = "url('" + url + cards[clickedId] + "')";
+        clickedIds.push(clickedId);
+        console.log(clickedIds);
+        if (clickedIds.length === 2) {
+            let card1picture = document.getElementById(clickedIds[0]).style.backgroundImage;
+            let card2picture = document.getElementById(clickedIds[1]).style.backgroundImage;
+            console.log(card1picture);
+            console.log(card2picture);
+            if (card1picture === card2picture) {
+                console.log("match");
+                document.getElementById(clickedIds[0]).id = "";
+                document.getElementById(clickedIds[1]).id = "";
+                clickedIds = [];
+                console.log(clickedIds);
+            }
+        } else if (clickedIds.length > 2) {
+            document.getElementById(clickedIds[0]).id = "";
+            document.getElementById(clickedIds[1]).id = "";
+            clickedIds = [];
+            clickedIds.push(clickedId);
+            console.log(clickedIds);
+        }
+    }
 });
